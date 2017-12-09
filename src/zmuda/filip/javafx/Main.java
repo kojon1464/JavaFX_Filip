@@ -1,5 +1,7 @@
 package zmuda.filip.javafx;
 
+import com.sun.java.swing.plaf.windows.WindowsOptionPaneUI;
+
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -20,12 +22,20 @@ public class Main extends Application {
 	static double height = 675;
 	Game game;
 	Stage window;
+	
+	VBox panel;
+	VBox background;
+	Button startButton;
+	Button helpButton;
+	Scene scene;
 
 	public enum Lines {
 		FIRST(height / 9, 300), SECOND(height / 3, 450), THIRD(height / 20 * 11, 600), FOURTH(height / 4 * 3, 750);
 
 		double y;
 		double velocity;
+		
+		
 
 		private Lines(double y, double velocity) {
 			this.y = y;
@@ -42,11 +52,11 @@ public class Main extends Application {
 
 		this.window = window;
 
-		VBox panel = new VBox();
-		VBox background = new VBox();
-		Button startButton = new Button("Start");
-		Button helpButton = new Button("Help");
-		Scene scene = new Scene(panel);
+		panel = new VBox();
+		background = new VBox();
+		startButton = new Button("Start");
+		helpButton = new Button("Help");
+		scene = new Scene(panel);
 		Sprite road = new Sprite(
 				new Image(getClass().getResource("road.png").toExternalForm(), width * 2, height, true, true));
 		scene.getStylesheets().add(getClass().getResource("Style.css").toExternalForm());
@@ -79,8 +89,15 @@ public class Main extends Application {
 	private void handleStart() {
 		game = new Game();
 		window.setScene(game.getScene());
+		game.setCollisionHandler(distance -> handleEnd(distance));
 		game.start();
 
+	}
+
+	private Object handleEnd(double distance) {
+		window.setScene(scene);
+		startButton.setText(String.valueOf(distance));
+		return null;
 	}
 
 }

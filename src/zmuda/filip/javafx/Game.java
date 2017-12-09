@@ -3,10 +3,13 @@ package zmuda.filip.javafx;
 import java.util.ArrayList;
 
 import javafx.animation.AnimationTimer;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 
@@ -17,6 +20,7 @@ public class Game {
 	Group layout;
 	Scene scene;
 	AnimationTimer timer;
+	private CollisionHandler handler;
 
 	public enum Lines {
 		FIRST(height / 9, 300), SECOND(height / 3, 450), THIRD(height / 20 * 11, 600), FOURTH(height / 4 * 3, 750);
@@ -33,9 +37,10 @@ public class Game {
 	public Game() {
 		layout = new Group();
 		scene = new Scene(layout);
+		Label label = new Label();
 
 		Canvas canvas = new Canvas(width, height);
-		layout.getChildren().add(canvas);
+		layout.getChildren().addAll(canvas, label);
 
 		GraphicsContext gc = canvas.getGraphicsContext2D();
 
@@ -47,6 +52,9 @@ public class Game {
 		initiateObjects(objects);
 
 		final long startNanoTime = System.nanoTime();
+		
+		StringProperty distance = new SimpleStringProperty();
+		label.textProperty().bind(distance);
 
 		ArrayList<KeyCode> input = new ArrayList<>();
 		scene.setOnKeyPressed(e -> {
@@ -65,7 +73,9 @@ public class Game {
 			double carY = (height - car.getHeight()) / 2;
 			double currentTime = 0;
 			double deltaTime;
-
+			double distanceTraveled = 0;
+			
+			
 			@Override
 			public void handle(long currentNanoTime) {
 
@@ -91,6 +101,9 @@ public class Game {
 				double time = (currentNanoTime - startNanoTime) / 1000000000.0;
 				deltaTime = time - currentTime;
 				currentTime = time;
+				
+				distanceTraveled += carVelocity * deltaTime/10;
+				distance.setValue(String.valueOf(distanceTraveled));
 
 				roadX -= carVelocity * deltaTime;
 				if (roadX <= -743)
@@ -105,8 +118,10 @@ public class Game {
 
 				for (Car object : objects) {
 					if (object != null) {
-						if (object.intersects(car))
+						if (object.intersects(car)){
+							handler.handleCollision(distanceTraveled);
 							stop();
+						}
 						object.check(gc, objects);
 					}
 
@@ -174,6 +189,10 @@ public class Game {
 
 	public void stop() {
 		timer.stop();
+	}
+	
+	public void setCollisionHandler(CollisionHandler handler){
+		this.handler = handler;
 	}
 
 }
