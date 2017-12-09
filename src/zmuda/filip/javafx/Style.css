@@ -1,0 +1,15 @@
+.button{
+    -fx-effect: dropshadow(two-pass-box , darkgray, 10, 0.0 , 4, 5);
+    -fx-background-color: rgba(205,205,205,0.7);
+    -fx-background-radius: 15 15 15 15;
+    -fx-background-insets: 2 2 2 2 ;
+    -fx-font-size: 40px;
+}
+
+.button:pressed{
+    -fx-background-color: rgba(180,180,180,0.7);
+}
+
+.button:hover{
+    -fx-background-color: rgba(235,235,235,0.7);
+}
