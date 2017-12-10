@@ -1,5 +1,5 @@
 package zmuda.filip.javafx;
 
 public interface CollisionHandler {
-	public void handleCollision(double distanceTraveled);
+	public void handleCollision(String distanceTraveled);
 }

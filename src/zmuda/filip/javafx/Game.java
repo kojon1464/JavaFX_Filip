@@ -55,6 +55,7 @@ public class Game {
 		
 		StringProperty distance = new SimpleStringProperty();
 		label.textProperty().bind(distance);
+		label.getStylesheets().add(getClass().getResource("Style.css").toExternalForm());
 
 		ArrayList<KeyCode> input = new ArrayList<>();
 		scene.setOnKeyPressed(e -> {
@@ -74,20 +75,11 @@ public class Game {
 			double currentTime = 0;
 			double deltaTime;
 			double distanceTraveled = 0;
+			String stringDistance;
 			
 			
 			@Override
 			public void handle(long currentNanoTime) {
-
-				if (input.contains(KeyCode.A))
-					carVelocity -= 14;
-				else
-					carVelocity += 7;
-
-				if (carVelocity < 150)
-					carVelocity = 150;
-				if (carVelocity > 500)
-					carVelocity = 500;
 
 				if (input.contains(KeyCode.S))
 					carY += carVelocity * deltaTime;
@@ -103,7 +95,8 @@ public class Game {
 				currentTime = time;
 				
 				distanceTraveled += carVelocity * deltaTime/10;
-				distance.setValue(String.valueOf(distanceTraveled));
+				stringDistance = String.valueOf(distanceTraveled);
+				distance.setValue(stringDistance.substring(0, stringDistance.indexOf('.')) + " m");
 
 				roadX -= carVelocity * deltaTime;
 				if (roadX <= -743)
@@ -119,7 +112,7 @@ public class Game {
 				for (Car object : objects) {
 					if (object != null) {
 						if (object.intersects(car)){
-							handler.handleCollision(distanceTraveled);
+							handler.handleCollision(stringDistance);
 							stop();
 						}
 						object.check(gc, objects);
